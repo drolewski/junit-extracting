@@ -17,7 +17,7 @@ public class Avenger {
     private final int age;
     private final Sex sex;
     private final Origin origin;
-    private final List<Avenger> teamMates;
+    private final List<Avenger> teammates;
 
     public int getHeightInCm() {
         return (int) (height * 100);

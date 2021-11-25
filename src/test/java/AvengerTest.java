@@ -25,7 +25,7 @@ class AvengerTest {
             .superPower("Power of Storm + Hammer")
             .sex(Sex.MALE)
             .origin(new Origin("Space", "Asgard"))
-            .teamMates(Collections.EMPTY_LIST)
+            .teammates(Collections.EMPTY_LIST)
             .build();
 
     public static Avenger IRON_MAN = Avenger.builder()
@@ -36,7 +36,7 @@ class AvengerTest {
             .superPower("Money, brain and Rocket Suit")
             .sex(Sex.MALE)
             .origin(new Origin("Earth", "Los Angeles"))
-            .teamMates(Collections.singletonList(THOR))
+            .teammates(Collections.singletonList(THOR))
             .build();
 
     public static Avenger HULK = Avenger.builder()
@@ -47,7 +47,7 @@ class AvengerTest {
             .superPower("GREEN")
             .sex(Sex.MALE)
             .origin(new Origin("Earth", "Dayton"))
-            .teamMates(Collections.singletonList(THOR))
+            .teammates(Collections.singletonList(THOR))
             .build();
 
     public static Avenger CAPTAIN_AMERICA = Avenger.builder()
@@ -58,7 +58,7 @@ class AvengerTest {
             .superPower("Shield")
             .sex(Sex.MALE)
             .origin(new Origin("Earth", "New York City"))
-            .teamMates(Arrays.asList(THOR, HULK, IRON_MAN))
+            .teammates(Arrays.asList(THOR, HULK, IRON_MAN))
             .build();
 
     public static Avenger CAPTAIN_MARVEL = Avenger.builder()
@@ -69,11 +69,12 @@ class AvengerTest {
             .superPower("Strength")
             .sex(Sex.FEMALE)
             .origin(new Origin("Earth", "Dallas"))
-            .teamMates(Collections.EMPTY_LIST)
+            .teammates(Collections.EMPTY_LIST)
             .build();
 
     @Test
     void assertionDescription() {
+        // test description
         assertThat(THOR.getHeight()).as("check %s's height", THOR.getHeroName()).isEqualTo(1.913);
     }
 
@@ -85,7 +86,7 @@ class AvengerTest {
         assertThat(avengers).filteredOn(avenger -> avenger.getHeight() < 2)
                 .containsOnly(THOR, IRON_MAN, CAPTAIN_AMERICA, CAPTAIN_MARVEL);
 
-        // containsExactly - duplicates sensitive (fails if number of elements are differ)
+        // containsExactly - duplicates sensitive (fails if number of elements are differed)
         assertThat(avengers).filteredOn(avenger -> avenger.getHeroName().contains("a"))
                 .containsExactlyInAnyOrder(IRON_MAN, CAPTAIN_AMERICA, CAPTAIN_MARVEL);
 
@@ -103,7 +104,7 @@ class AvengerTest {
 
         assertThat(avengers).containsOnly(THOR, IRON_MAN, HULK, CAPTAIN_AMERICA)
                 .containsExactlyInAnyOrder(THOR, IRON_MAN, HULK, CAPTAIN_AMERICA, THOR)
-                .containsExactlyInAnyOrder(THOR, IRON_MAN, HULK, CAPTAIN_AMERICA);
+                .containsExactlyInAnyOrder(THOR, IRON_MAN, HULK, CAPTAIN_AMERICA); //
     }
 
     @Test
@@ -121,14 +122,14 @@ class AvengerTest {
 
     @Test
     void flatExtracting() {
-        var customExtractor = new TeammatesExtractor();
+        var customExtractor = new teammatesExtractor();
         var avengers = Arrays.asList(THOR, IRON_MAN, CAPTAIN_AMERICA);
 
-        assertThat(avengers).flatExtracting("teamMates")
+        assertThat(avengers).flatExtracting("teammates")
                 .containsOnly(THOR, IRON_MAN, HULK);
 
         // great example of containsExactly
-        assertThat(avengers).flatExtracting("teamMates")
+        assertThat(avengers).flatExtracting("teammates")
                 .containsExactlyInAnyOrder(THOR, THOR, IRON_MAN, HULK);
 
         // custom extractor
@@ -140,12 +141,14 @@ class AvengerTest {
     void extractingResultOf() {
         var avengers = Arrays.asList(THOR, IRON_MAN, CAPTAIN_AMERICA);
 
+        // extract method result
         assertThat(avengers).extractingResultOf("getHeightInCm")
                 .contains(191, 198, 186);
     }
 
     @Test
     void softAssertions() {
+        // run all assertions
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(THOR.getAge()).as("Age").isEqualTo(1501);
             softly.assertThat(THOR.getHeroName()).as("HeroName").isEqualTo("Thors");
@@ -162,10 +165,10 @@ class AvengerTest {
         assertThat(HULK).isEqualToComparingOnlyGivenFields(CAPTAIN_MARVEL, "origin.reality", "sex");
     }
 
-    static class TeammatesExtractor implements Extractor<Avenger, List<Avenger>> {
+    static class teammatesExtractor implements Extractor<Avenger, List<Avenger>> {
         @Override
         public List<Avenger> extract(Avenger avenger) {
-            return avenger.getTeamMates();
+            return avenger.getTeammates();
         }
     }
 

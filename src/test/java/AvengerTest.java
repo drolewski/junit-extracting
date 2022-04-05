@@ -33,7 +33,7 @@ class AvengerTest {
             .realName("Tony Stark")
             .age(48)
             .height(1.98)
-            .superPower("Money, brain and Rocket Suit")
+            .superPower("Money, Brain and Rocket Suit")
             .sex(Sex.MALE)
             .origin(new Origin("Earth", "Los Angeles"))
             .teammates(Collections.singletonList(THOR))
@@ -111,8 +111,8 @@ class AvengerTest {
     void extracting() {
         var avengers = Arrays.asList(THOR, IRON_MAN);
 
-        assertThat(avengers).extracting("heroName")
-                .contains(THOR.getHeroName(), IRON_MAN.getHeroName())
+        assertThat(avengers).extracting(Avenger::getHeroName)
+                .contains(THOR.getHeroName(), IRON_MAN.getHeroName(), HULK.getHeroName())
                 .doesNotContain(HULK.getHeroName(), CAPTAIN_MARVEL.getHeroName());
 
         assertThat(avengers).extracting("heroName", "origin.city", "sex")
@@ -149,6 +149,7 @@ class AvengerTest {
     @Test
     void softAssertions() {
         // run all assertions
+        // collect all failed assertions
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(THOR.getAge()).as("Age").isEqualTo(1501);
             softly.assertThat(THOR.getHeroName()).as("HeroName").isEqualTo("Thors");
@@ -157,7 +158,7 @@ class AvengerTest {
 
     @Test
     void fieldByFieldComparison() {
-        // compare only given field
+        // compare only given fields
         assertThat(THOR).isEqualToComparingOnlyGivenFields(IRON_MAN, "sex");
         assertThat(IRON_MAN).isEqualToComparingOnlyGivenFields(CAPTAIN_MARVEL, "origin.reality");
 
@@ -184,4 +185,5 @@ class AvengerTest {
             }
         };
     }
+
 }

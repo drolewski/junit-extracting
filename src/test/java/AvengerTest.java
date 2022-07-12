@@ -1,6 +1,7 @@
 import model.Avenger;
 import model.Origin;
 import model.Sex;
+import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.iterable.Extractor;
@@ -17,6 +18,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 
 class AvengerTest {
 
+    private static final String SHIELD = "Shield";
+
     public static Avenger THOR = Avenger.builder()
             .heroName("Thor")
             .realName("Thor")
@@ -26,6 +29,7 @@ class AvengerTest {
             .sex(Sex.MALE)
             .origin(new Origin("Space", "Asgard"))
             .teammates(Collections.EMPTY_LIST)
+            .weapon("Hammer")
             .build();
 
     public static Avenger IRON_MAN = Avenger.builder()
@@ -37,6 +41,7 @@ class AvengerTest {
             .sex(Sex.MALE)
             .origin(new Origin("Earth", "Los Angeles"))
             .teammates(Collections.singletonList(THOR))
+            .weapon("Suit")
             .build();
 
     public static Avenger HULK = Avenger.builder()
@@ -48,6 +53,7 @@ class AvengerTest {
             .sex(Sex.MALE)
             .origin(new Origin("Earth", "Dayton"))
             .teammates(Collections.singletonList(THOR))
+            .weapon(null)
             .build();
 
     public static Avenger CAPTAIN_AMERICA = Avenger.builder()
@@ -59,6 +65,7 @@ class AvengerTest {
             .sex(Sex.MALE)
             .origin(new Origin("Earth", "New York City"))
             .teammates(Arrays.asList(THOR, HULK, IRON_MAN))
+            .weapon(SHIELD)
             .build();
 
     public static Avenger CAPTAIN_MARVEL = Avenger.builder()
@@ -70,6 +77,17 @@ class AvengerTest {
             .sex(Sex.FEMALE)
             .origin(new Origin("Earth", "Dallas"))
             .teammates(Collections.EMPTY_LIST)
+            .build();
+
+    public static Avenger VENOM = Avenger.builder()
+            .heroName("Venom")
+            .realName("Eddie Brock")
+            .age(40)
+            .height(1.91)
+            .superPower("Alien")
+            .sex(Sex.MALE)
+            .origin(new Origin("Earth", "New York"))
+            .teammates(null)
             .build();
 
     @Test
@@ -164,6 +182,25 @@ class AvengerTest {
 
         // failed, sex is not equal
         assertThat(HULK).isEqualToComparingOnlyGivenFields(CAPTAIN_MARVEL, "origin.reality", "sex");
+    }
+
+    @Test
+    void optionalWeaponAssertion() {
+        var avengers = Arrays.asList(CAPTAIN_MARVEL, HULK, CAPTAIN_AMERICA);
+
+        assertThat(avengers).extractingResultOf("getWeapon").containsExactly(StringUtils.EMPTY, StringUtils.EMPTY, SHIELD);
+    }
+
+    @Test
+    void reduceTeam() {
+        assertThat(Collections.singletonList(VENOM)).extractingResultOf("getTeam").containsExactly("You have no friends;");
+        assertThat(Collections.singletonList(HULK)).extractingResultOf("getTeam").containsExactly("Thor;");
+    }
+
+    @Test
+    void filterAndCollect() {
+        assertThat(Collections.singletonList(HULK)).extractingResultOf("getTeammateWeapons").containsExactly(Collections.singletonList(THOR.getWeapon()));
+        assertThat(Collections.singletonList(VENOM)).extractingResultOf("getTeammateWeapons").containsExactly(Collections.emptyList());
     }
 
     static class teammatesExtractor implements Extractor<Avenger, List<Avenger>> {
